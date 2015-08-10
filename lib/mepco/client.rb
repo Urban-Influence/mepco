@@ -5,14 +5,9 @@ require 'mepco/endpoint'
 
 module Mepco
   class Client
-    attr_reader :config
-
     # Initialize the Mepco client
-    #
-    # @param [Config]
-    def initialize(config)
-      @config = config
-      @endpoint = Endpoint.new(@config.environment, @config.version)
+    def initialize
+      @endpoint = Endpoint.new(Mepco.config.environment, Mepco.config.version)
     end
 
     # Get the SSO URL
@@ -36,13 +31,13 @@ module Mepco
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 
       auth_code = Base64.encode64([
-        config.username,
-        config.password
+        Mepco.config.username,
+        Mepco.config.password
       ].join(':'))
 
       headers = {
         'Authorization' => "Basic #{auth_code}",
-        'AuthToken' => config.token
+        'AuthToken' => Mepco.config.token
       }
 
       http.post(@endpoint.for(path), query, headers)
